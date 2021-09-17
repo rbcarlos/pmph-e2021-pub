@@ -6,7 +6,7 @@
 #include <sys/time.h>
 #include <time.h>
 
-unsigned int N = 1e6;
+unsigned int N = 753411;
 unsigned int mem_size = N * sizeof(float);
 unsigned int block_size = 256;
 unsigned int num_blocks = ((N + ( block_size + 1)) / block_size);
