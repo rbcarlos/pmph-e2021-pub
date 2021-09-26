@@ -198,8 +198,8 @@ scanIncWarpCoal( volatile typename OP::RedElTp* ptr, const unsigned int idx ) {
     if(lane==0) {
         #pragma unroll
         for(int d=0; d<lgWARP; d++) {
-            h = pow(2, d);
-            for(int i=h; i< n-1; i++) {
+            int h = pow(2, d);
+            for(int i=h; i< WARP-1; i++) {
                 ptr[idx+i] = OP::apply(ptr[idx+i-h], ptr[idx+i]);
             }
         }
