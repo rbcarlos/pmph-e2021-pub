@@ -3,14 +3,6 @@
 -- compiled input { 30i64 } output { [2i64, 3i64, 5i64, 7i64, 11i64, 13i64, 17i64, 19i64, 23i64, 29i64] }
 -- compiled input { 10000000i64 } auto output
 
-let segmented_scan 't [n] (g:t->t->t) (ne: t) (flags: [n]bool) (vals: [n]t): [n]t =
-  let pairs = scan ( \ (v1,f1) (v2,f2) ->
-                       let f = f1 || f2
-                       let v = if f2 then v2 else g v1 v2
-                       in (v,f) ) (ne,false) (zip vals flags)
-  let (res,_) = unzip pairs
-  in res
-
 let primesFlat (n : i64) : []i64 =
   let sq_primes   = [2i64, 3i64, 5i64, 7i64]
   let len  = 8i64
@@ -24,25 +16,12 @@ let primesFlat (n : i64) : []i64 =
       let flat_size = reduce (+) 0 mult_lens
 
       -- iota
-      let scan_inc = scan (+) 0 mult_lens
-      let scan_ex = map (\x -> if x == 0 then 0 else scan_inc[x-1]) (iota (length scan_inc))
-      let flag = scatter (replicate flat_size 0) scan_ex mult_lens
-      let tmp = replicate flat_size 1
-      let flag_bool = map (\x -> bool.i64 x) flag
-      let iots = segmented_scan (+) 0 flag_bool tmp
-
-      -- map
-      let twoms = map (+2) iots
-
-      -- replicate
-      let flag = scatter (replicate flat_size 0) scan_ex sq_primes
-      let flag_bool = map (\x -> bool.i64 x) flag
-      let rps = segmented_scan (+) 0 flag_bool flag
-
-      -- map 
-      let res = map2 (\ j p -> j * p) twoms rps
-
-
+      inds_inc = scan (+) 0 mult_lens
+      inds = map (\i -> if i==0 then 0 else inds_inc[i-1]) iota len
+      size = reduce (+) 0 inds
+      flag = scatter (replicate size 0) inds mult_lens
+      tmp = replicate size 1
+      
 
       --------------------------------------------------------------
       -- The current iteration knowns the primes <= 'len', 
