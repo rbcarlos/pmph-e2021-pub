@@ -180,30 +180,22 @@ template<class OP>
 __device__ inline typename OP::RedElTp
 scanIncWarp( volatile typename OP::RedElTp* ptr, const unsigned int idx ) {
     const unsigned int lane = idx & (WARP-1);
-
+    #if 1
     if(lane==0) {
         #pragma unroll
         for(int i=1; i<WARP; i++) {
             ptr[idx+i] = OP::apply(ptr[idx+i-1], ptr[idx+i]);
         }
     }
-    return OP::remVolatile(ptr[idx]);
-}
-
-template<class OP>
-__device__ inline typename OP::RedElTp
-scanIncWarpCoal( volatile typename OP::RedElTp* ptr, const unsigned int idx ) {
-    const unsigned int lane = idx & (WARP-1);
-
-    if(lane==0) {
-        #pragma unroll
-        for(int d=0; d<lgWARP; d++) {
-            int h = pow(2, d);
-            for(int i=h; i< WARP-1; i++) {
-                ptr[idx+i] = OP::apply(ptr[idx+i-h], ptr[idx+i]);
-            }
+    #else
+    #pragma unroll
+    for(int d=0; d<lgWARP; d++) {
+        int h = 1 << d //2^d
+        if(h>=lane) {
+            ptr[idx] = OP::apply(ptr[idx-h], ptr[idx]);
         }
     }
+    #endif
     return OP::remVolatile(ptr[idx]);
 }
 
@@ -452,7 +444,11 @@ copyFromGlb2ShrMem( const uint32_t glb_offs
 ) {
     #pragma unroll
     for(uint32_t i=0; i<CHUNK; i++) {
-        uint32_t loc_ind = threadIdx.x*CHUNK + i;
+        #if 1 
+        uint32_t loc_ind = threadIdx.x * CHUNK + i;
+        #else
+        uint32_t loc_ind = threadIdx.x + (blockDim.x * i);
+        #endif
         uint32_t glb_ind = glb_offs + loc_ind;
         T elm = ne;
         if(glb_ind < N) { elm = d_inp[glb_ind]; }
@@ -482,57 +478,11 @@ copyFromShr2GlbMem( const uint32_t glb_offs
 ) {
     #pragma unroll
     for (uint32_t i = 0; i < CHUNK; i++) {
+        #if 1 
         uint32_t loc_ind = threadIdx.x * CHUNK + i;
-        uint32_t glb_ind = glb_offs + loc_ind;
-        if (glb_ind < N) {
-            T elm = const_cast<const T&>(shmem_red[loc_ind]);
-            d_out[glb_ind] = elm;
-        }
-    }
-    __syncthreads(); // leave this here at the end!
-}
-
-template<class T, uint32_t CHUNK>
-__device__ inline void
-copyFromGlb2ShrMemCoal( const uint32_t glb_offs
-                  , const uint32_t N
-                  , const T& ne
-                  , T* d_inp
-                  , volatile T* shmem_inp
-) {
-    #pragma unroll
-    for(uint32_t i=0; i<CHUNK; i++) {
-        uint32_t loc_ind = threadIdx.x + (CHUNK * i);
-        uint32_t glb_ind = glb_offs + loc_ind;
-        T elm = ne;
-        if(glb_ind < N) { elm = d_inp[glb_ind]; }
-        shmem_inp[loc_ind] = elm;
-    }
-    __syncthreads(); // leave this here at the end!
-}
-
-/**
- * This is very similar with `copyFromGlb2ShrMem` except
- * that you need to copy from shared to global memory, so
- * that consecutive threads write consecutive indices in
- * global memory in the same SIMD instruction. 
- * `glb_offs` is the offset in global-memory array `d_out`
- *    where elements should be written.
- * `d_out` is the global-memory array
- * `N` is the length of `d_out`
- * `shmem_red` is the shared-memory of size
- *    `blockDim.x*CHUNK*sizeof(T)`
- */
-template<class T, uint32_t CHUNK>
-__device__ inline void
-copyFromShr2GlbMemCoal( const uint32_t glb_offs
-                  , const uint32_t N
-                  , T* d_out
-                  , volatile T* shmem_red
-) {
-    #pragma unroll
-    for (uint32_t i = 0; i < CHUNK; i++) {
-        uint32_t loc_ind = threadIdx.x + (CHUNK * i);
+        #else
+        uint32_t loc_ind = threadIdx.x + (blockDim.x * i);
+        #endif
         uint32_t glb_ind = glb_offs + loc_ind;
         if (glb_ind < N) {
             T elm = const_cast<const T&>(shmem_red[loc_ind]);
