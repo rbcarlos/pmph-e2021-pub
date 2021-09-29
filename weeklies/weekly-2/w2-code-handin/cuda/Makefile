@@ -22,13 +22,13 @@ all: $(TEST_PBB) $(TEST_SPMV)
 
 run: $(TEST_PBB) $(TEST_SPMV)
 	./$(TEST_PBB) 50003565 128
-	./$(TEST_SPMV) 11033 2076 256
+	./$(TEST_SPMV) 1024 3 32
 
 run-pbb: $(TEST_PBB)
 	./$(TEST_PBB) 50003565 128
 
 run-spmv: $(TEST_SPMV)
-	./$(TEST_SPMV) 11033 2076 256
+	./$(TEST_SPMV) 1024 33 32
 
 clean:
 	rm -f $(TEST_PBB) $(TEST_SPMV)
