@@ -167,9 +167,6 @@ int SparseMatVctMult(int block_size, int mat_rows, int vct_size) {
             replicate0<<< num_blocks, block_size >>> ( tot_size, flags_d );
             //cudaDeviceSynchronize(); gpuAssert( cudaPeekAtLastError() ); printf("22222\n");
             mkFlags<<< num_blocks_shp, block_size >>> ( mat_rows, mat_shp_sc_d, flags_d );
-            for(int i=0; i<tot_size; i++) {
-                printf("%d, ", flags_d[i]);
-            }
             //cudaDeviceSynchronize(); gpuAssert( cudaPeekAtLastError() ); printf("33333\n");
             mult_pairs<<< num_blocks, block_size >>>(mat_inds_d, mat_vals_d, vct_d, tot_size, tmp_pairs);
             //cudaDeviceSynchronize(); gpuAssert( cudaPeekAtLastError() ); printf("44444\n"); 

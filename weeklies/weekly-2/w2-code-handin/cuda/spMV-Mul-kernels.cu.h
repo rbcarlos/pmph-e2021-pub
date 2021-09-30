@@ -34,7 +34,7 @@ select_last_in_sgm(int mat_rows, int* mat_shp_sc_d, float* tmp_scan, float* res_
     const unsigned int lid = threadIdx.x;
     const unsigned int gid = blockIdx.x*blockDim.x + lid;
     if (gid < mat_rows) { 
-        const unsigned int id = (gid == (mat_rows-1)) ? mat_rows-1 : (mat_shp_sc_d[gid] + mat_shp_sc_d[gid+1]); 
+        const unsigned int id = mat_shp_sc_d[gid] - 1; 
         res_vct_d[gid] = tmp_scan[id];
     }
 }
