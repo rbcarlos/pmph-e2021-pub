@@ -11,6 +11,21 @@ let segmented_scan 't [n] (g:t->t->t) (ne: t) (flags: [n]bool) (vals: [n]t): [n]
   let (res,_) = unzip pairs
   in res
 
+let segmented_iota [n] (flags:[n]bool) : [n]i64 =
+  let iotas = segmented_scan (+) 0 flags (replicate n 1)
+  in map (\x -> x-1) iotas
+
+let iota_flags [n] (reps:[n]i64) (flat_size: i64) : []bool =
+  let s1 = scan (+) 0 reps
+  let s2 = map (\i -> if i==0 then 0 else s1[i-1]) (iota n)
+  let tmp = scatter (replicate (flat_size) 0) s2 (iota n)
+  in map (>0) tmp
+
+let scan_ex [n] (reps:[n]i64) : []i64 = 
+  let s1 = scan (+) 0 reps
+  in map (\i -> if i==0 then 0 else s1[i-1]) (iota n)
+
+
 let primesFlat (n : i64) : []i64 =
   let sq_primes   = [2i64, 3i64, 5i64, 7i64]
   let len  = 8i64
@@ -24,24 +39,23 @@ let primesFlat (n : i64) : []i64 =
       let flat_size = reduce (+) 0 mult_lens
 
       -- iota
-      let scan_inc = scan (+) 0 mult_lens
-      let scan_ex = map (\x -> if x == 0 then 0 else scan_inc[x-1]) (iota (length scan_inc))
-      let flag = scatter (replicate flat_size 0) scan_ex mult_lens
-      let tmp = replicate flat_size 1
-      let flag_bool = map (\x -> bool.i64 x) flag
-      let iots = segmented_scan (+) 0 flag_bool tmp
-
+      let iots_flags = iota_flags mult_lens flat_size
+      let iots = segmented_iota iots_flags
+      --let y = break 0
       -- map
       let twoms = map (+2) iots
+      --let y = break 0
 
       -- replicate
-      let flag = scatter (replicate flat_size 0) scan_ex sq_primes
-      let flag_bool = map (\x -> bool.i64 x) flag
+      let inds = scan_ex mult_lens 
+      let flag = scatter (replicate flat_size 0) inds sq_primes
+      let flag_bool = map (>0) flag
       let rps = segmented_scan (+) 0 flag_bool flag
 
+      --let y = break 0
       -- map 
-      let res = map2 (\ j p -> j * p) twoms rps
-
+      let not_primes = map2 (\ j p -> j * p) twoms rps
+      --let y = break 0
 
 
       --------------------------------------------------------------
@@ -63,7 +77,7 @@ let primesFlat (n : i64) : []i64 =
       -- Also note that `not_primes` has flat length equal to `flat_size`
       --  and the shape of `composite` is `mult_lens`. 
       
-      let not_primes = replicate flat_size 0
+      --let not_primes = replicate flat_size 0
 
       -- If not_primes is correctly computed, then the remaining
       -- code is correct and will do the job of computing the prime
