@@ -180,7 +180,7 @@ template<class OP>
 __device__ inline typename OP::RedElTp
 scanIncWarp( volatile typename OP::RedElTp* ptr, const unsigned int idx ) {
     const unsigned int lane = idx & (WARP-1);
-    #if 1
+    #if 0
     if(lane==0) {
         #pragma unroll
         for(int i=1; i<WARP; i++) {
@@ -190,8 +190,8 @@ scanIncWarp( volatile typename OP::RedElTp* ptr, const unsigned int idx ) {
     #else
     #pragma unroll
     for(int d=0; d<lgWARP; d++) {
-        int h = 1 << d //2^d
-        if(h>=lane) {
+        int h = 1 << d; //2^d
+        if(h<=lane) {
             ptr[idx] = OP::apply(ptr[idx-h], ptr[idx]);
         }
     }
@@ -444,7 +444,7 @@ copyFromGlb2ShrMem( const uint32_t glb_offs
 ) {
     #pragma unroll
     for(uint32_t i=0; i<CHUNK; i++) {
-        #if 1 
+        #if 0 
         uint32_t loc_ind = threadIdx.x * CHUNK + i;
         #else
         uint32_t loc_ind = threadIdx.x + (blockDim.x * i);
@@ -478,7 +478,7 @@ copyFromShr2GlbMem( const uint32_t glb_offs
 ) {
     #pragma unroll
     for (uint32_t i = 0; i < CHUNK; i++) {
-        #if 1 
+        #if 0 
         uint32_t loc_ind = threadIdx.x * CHUNK + i;
         #else
         uint32_t loc_ind = threadIdx.x + (blockDim.x * i);
