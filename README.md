@@ -100,20 +100,20 @@ the lab sessions.
 | 23/09 | 10:00-12:00 | [Optimizing ILP, VLIW Architectures (SFT-HWD)](slides/L4-VLIW.pdf) | Chapter 3 of "Parallel Computer Organization and Design" Book |
 | 23/09 | 13:00-17:00 | Lab: [GPU hardware: three important design choices.](slides/Lab2-GPU-HWD.pdf) | helping with the first two weekly assignments.
 | 23/09 |  | No new weekly assignment this week; the third will be published next week | |
-| 28/09 | 10:00-12:00 | [Finishing VLIW Architectures (SFT-HWD)](slides/L4-VLIW.pdf), [Dependency Analysis of Imperative Loops](slides/L5-LoopParI.pdf) | Chapter 3 of "Parallel Computer Organization and Design" Book, Chapter 5 of lecture Notes |
-| 30/09 | 10:00-12:00 | [Dependency Analysis of Imperative Loops, Case Study: Matrix Multiplication and Transposition](slides/L5-LoopParI.pdf) | Chapters 5 and 6 of lecture Notes |
-| 30/09 | 13:00-17:00 | Lab: Recognizing Scan and Reduce Patterns in Imperative Code | helping with the first two weekly assignments.
+| 28/09 | 10:00-12:00 | [Dependency Analysis of Imperative Loops](slides/L5-LoopParI.pdf) | Chapter 5 of lecture Notes |
+| 30/09 | 10:00-12:00 | [Optimizing Locality, Case Study: Nearest Neighbor, Matrix Multiplication and Transposition](slides/L5-LoopParI.pdf) | Chapters 5 and 6 of lecture Notes |
+| 30/09 | 13:00-17:00 | Lab: Recognizing Scan and Reduce Patterns in Imperative Code | helping with the weekly assignments.
 | 30/09 | some time   | [**Assignment 3 handout**](weeklies/weekly-3/) | |
 | 05/10 | 10:00-12:00 | [Memory Hierarchy, Bus-Based Coherency Protocols (HWD)](slides/L6-MemIntro.pdf) | Chapter 4 and 5 of "Parallel Computer Organization and Design" Book |
-| 07/10 | 10:00-12:00 | [Bus-Based Coherency Protocols (HWD) (HWD)](slides/L6-MemIntro.pdf) | Chapters 5 and 6 of "Parallel Computer Organization and Design" Book |
-| 07/10 | 13:00-17:00 | Lab: Presenting Possible Group Project | helping with two weekly assignments.
+| 07/10 | 10:00-12:00 | HWD: [Bus-Based Coherency Protocols](slides/L6-MemIntro.pdf) and [Scalable Coherence Protocols](slides/L7-Interconnect.pdf) | Chapters 5 and 6 of "Parallel Computer Organization and Design" Book |
+| 07/10 | 13:00-17:00 | Lab: [**Presenting Possible Group Projects**](group-projects/), [Assignment 4 handout](weeklies/weekly-4/) | helping with weekly assignments, discussing group projects.
 | 12/10 | 10:00-12:00 | [Scalable Coherence Protocols, Scalable Interconect (HWD)](slides/L7-Interconnect.pdf) | Chapters 5 and 6 of "Parallel Computer Organization and Design" Book |
-| 14/10 | 10:00-12:00 | [Scalable Interconect (HWD)](slides/L7-Interconnect.pdf) | Chapter 6 of "Parallel Computer Organization and Design" Book, Help for the fourth weekly assignment |
+| 14/10 | 10:00-12:00 | [Inspector-Executor Techniques for Locality Optimizations (SFT)](slides/L8-LocOfRef.pdf) | [Various scientific papers](material/Opt-Loc-Ref) |
 | 14/10 | 13:00-17:00 | Lab: Working on the 4th Weekly Assignment | helping project and anything else.
 | 19/10 | 10:00-12:00 | Autumn break (no lecture) | |
 | 21/10 | 10:00-12:00 | Autumn break (no lecture) | |
 | 21/10 | 13:00-17:00 | Autumn break (no lab) |
-| 26/10 | 10:00-12:00 | [Inspector-Executor Techniques for Locality Optimizations (SFT)](slides/L8-LocOfRef.pdf) | [Various scientific papers](material/Opt-Loc-Ref)|
+| 26/10 | 10:00-12:00 | Zoom Lab Session upon student request | Helping with group-project, weekly assignments |
 | 28/10 | 10:00-12:00 | [Modern CPU Design: Tomasulo Algorithm (HWD)](slides/L9-OoOproc.pdf)| Chapter 3 of "Parallel Computer Organization and Design" Book |
 | 28/10 | 13:00-17:00 | Lab: help with group project | 
 
@@ -142,24 +142,24 @@ deadline**.
 
 ### Weekly 3 (due October 7th)
 
-* [Assignment text]()
-* [Code handout]()
+* [Assignment text](weeklies/weekly-3/assignment3.asciidoc)
+* [Code handout](weeklies/weekly-3/wa3-code.tar.gz)
 
 ### Weekly 4 (due October 19th)
 
-* [Assignment text]()
+* [Assignment text](weeklies/weekly-4/Assignment4.pdf)
 
 ## Group projects (due Friday just before the exam week starts)
 
 Several potential choices for group project may be found in folder `group-projects`, namely
 
-* [Single Pass Scan in Cuda (basic block of parallel programming)]()
-* [Bfast: a landscape change detection algorithm (Remote Sensing)]()
-* [Local Volatility Calibration  (Finance)]()
-* [Trinomial-Tree Option Pricing (Finance)]()
-* [HP Implementation for Fusing Tensor Contractions (Deep Learning)](): read the paper, implement the technique (some initial code is provided), and try to replicate the results of the paper. 
+* **You are free to propose your own project, for example from the machine learning field, but please discuss it first with Cosmin, to make sure it is a relevant project, i.e., on which you can apply some of the techniques/reasoning that we have studied in PMPH.**
+* [Single Pass Scan in Cuda (basic block of parallel programming)](group-projects/single-pass-scan)
+* [Bfast: a landscape change detection algorithm (Remote Sensing)](group-projects/bfast)
+* [Local Volatility Calibration  (Finance)](group-projects/loc-vol-calib)
+* [Fast Sorting Algorithm(s) for GPUs](group-projects/sorting-on-gpu)
+* [HP Implementation for Fusing Tensor Contractions (Deep Learning)](group-projects/tensor-contraction): read the paper, implement the technique (some initial code is provided), and try to replicate the results of the paper. 
 
-You are also free to propose your own project, for example from the machine learning field.
 
 ## GPU + MultiCore Machines
 
