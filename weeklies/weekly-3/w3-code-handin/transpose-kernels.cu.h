@@ -82,8 +82,8 @@ transfProg(float* Atr, float* Btr, unsigned int N) {
 
     float tmpA, tmpB, accum;
 
-    tmpB = A[0,i] * A[0,i];
-    Btr[0,i] = tmpB;
+    tmpB = Atr[0,gid] * Atr[0,gid];
+    Btr[0,gid] = tmpB;
 
     for (int j=1; j<64; j++) {
         int idx = j*N + (gid);

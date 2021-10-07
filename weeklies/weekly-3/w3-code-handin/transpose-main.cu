@@ -184,7 +184,7 @@ int weekly3Task3( int height
         for (int kkk = 0; kkk < REPEAT; kkk++) {
             // 3.a.1  you probably need to transpose d_A here by
             //        using function "transposeTiled<float, TILE>"
-            transposeTile<float,TILE>(d_a, d_Atr, height, width);
+            transposeTiled<float,TILE>(d_A, d_Atr, height, width);
             //        i.e., source array is d_A, result array is d_Atr
             // 3.a.2  you probably need to implement the "transfProg"
             //        kernel in file transpose-kernel.cu.h which takes 
@@ -193,7 +193,7 @@ int weekly3Task3( int height
             // 3.a.3  you probably need to transpose-back the result here
             //        i.e., source array is d_Btr, and transposed result
             //        is in d_B.
-            transposeTile<float,TILE>(d_Btr, d_B, width, height);
+            transposeTiled<float,TILE>(d_Btr, d_B, width, height);
         }
         cudaDeviceSynchronize();
 
