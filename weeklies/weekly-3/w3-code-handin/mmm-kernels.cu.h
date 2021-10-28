@@ -70,26 +70,30 @@ __global__ void matMultRegTiledKer(ElTp* A, ElTp* B, ElTp* C, int heightA, int w
     for(int i =0; i<T; i++){
       cs[i] = 0.0;
     }
+    __syncthreads();
 
     for(int kk = 0; kk < widthA; kk += T){
       // here we will  insert a collective  copy to  shared
       //  memory  of the  slice: A[ii : ii+T, kk : kk+T]
+      // taken from matMultTiledKer
       Ash[threadIdx.y][threadIdx.x] = ((gidy < heightA) && (kk+threadIdx.x < widthA)) ?
             A[gidy*widthA + kk + threadIdx.x] : 0.0;
-      
+      __syncthreads();
+
       for(int k = 0; k < T; k++){
-        ElTp b = ((j<widthA) && ((kk+k) < heightB))? B[(kk+k)*widthA + j]: 0.0;
+        ElTp b = ((j<widthB) && ((kk+k) < widthA))? B[(kk+k)*widthB + j]: 0.0;
 
         #pragma unroll
         for(i = 0; i<T; i++){
-          cs[i] += Ash[i][k] * b;
+          cs[i] += Ash[i+ii][k+kk] * b;
         }
+	__syncthreads();
       }
     }
     #pragma unroll
     for(int i = 0; i < T; i++){
       if ((i + ii < heightA) && (j < widthB)) {
-        C[(i+ii)*widthB +j] = cs[i]
+        C[(i+ii)*widthB +j] = cs[i];
       } 
     }
 }
