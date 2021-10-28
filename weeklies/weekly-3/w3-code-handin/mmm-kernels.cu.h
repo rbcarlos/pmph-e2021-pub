@@ -47,6 +47,53 @@ __global__ void matMultTiledKer(ElTp* A, ElTp* B, ElTp* C, int heightA, int widt
     C[gidy*widthB + gidx] = accum;
 }
 
+template <class ElTp, int T> 
+__global__ void matMultRegTiledKer(ElTp* A, ElTp* B, ElTp* C, int heightA, int widthB, int widthA) {
+    // ToDo: fill in the kernel implementation of register+block tiled 
+    //       matrix-matrix multiplication here
+    ElTp cs[T];
+
+    __shared__ ElTp Ash[T][T];
+
+    int tidx = threadIdx.x;
+    int tidy = threadIdx.y;
+
+    int i;
+    int ii = blockIdx.y * T;
+    int jjj = blockIdx.x * T * T;
+
+    int jj = jjj + (tidy * T);
+    int j = jjj + tidx;
+
+    int gidy = blockIdx.y*blockDim.y + threadIdx.y; 
+
+    for(int i =0; i<T; i++){
+      cs[i] = 0.0;
+    }
+
+    for(int kk = 0; kk < widthA; kk += T){
+      // here we will  insert a collective  copy to  shared
+      //  memory  of the  slice: A[ii : ii+T, kk : kk+T]
+      Ash[threadIdx.y][threadIdx.x] = ((gidy < heightA) && (kk+threadIdx.x < widthA)) ?
+            A[gidy*widthA + kk + threadIdx.x] : 0.0;
+      
+      for(int k = 0; k < T; k++){
+        ElTp b = ((j<widthA) && ((kk+k) < heightB))? B[(kk+k)*widthA + j]: 0.0;
+
+        #pragma unroll
+        for(i = 0; i<T; i++){
+          cs[i] += Ash[i][k] * b;
+        }
+      }
+    }
+    #pragma unroll
+    for(int i = 0; i < T; i++){
+      if ((i + ii < heightA) && (j < widthB)) {
+        C[(i+ii)*widthB +j] = cs[i]
+      } 
+    }
+}
+
 // widthA = heightB
 template <class ElTp, int T> 
 __global__ void matMultCacheKer(ElTp* A, ElTp* B, ElTp* C, int heightA, int widthB, int widthA) {
@@ -66,7 +113,7 @@ __global__ void matMultCacheKer(ElTp* A, ElTp* B, ElTp* C, int heightA, int widt
     C[gidy*widthB + gidx] = accum;
 }
 
-
+/*
 template <class ElTp, int T> 
 __global__ void matMultRegTiledKer(ElTp* A, ElTp* B, ElTp* C, int heightA, int widthB, int widthA) {
     // ToDo: fill in the kernel implementation of register+block tiled 
@@ -106,6 +153,6 @@ __global__ void matMultRegTiledKer(ElTp* A, ElTp* B, ElTp* C, int heightA, int w
     }
 
 }
-
+*/
 
 #endif

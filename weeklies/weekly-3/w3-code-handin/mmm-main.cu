@@ -189,7 +189,7 @@ int main() {
    //       (for TILE = 16)
    {
       // 1. you would probably want to compute some valid grid and block here
-      int  dimy = ceil( ((float)HEIGHT_A)/TILE ); 
+      int  dimy = ceil( ((float) HEIGHT_A)/TILE ); 
       int  dimx = ceil( ((float) WIDTH_B)/TILE );
       dim3 block(TILE, TILE, 1);
       dim3 grid (dimx, dimy, 1);
@@ -200,7 +200,7 @@ int main() {
       
       for(int k=0; k<GPU_RUNS; k++) {
           // 2. you would probably want to call here the kernel: 
-          //matMultRegTiledKer<float,TILE> <<< grid, block >>>(d_A, d_B, d_C, HEIGHT_A, WIDTH_B, WIDTH_A);
+          matMultRegTiledKer<float,TILE> <<< grid, block >>>(d_A, d_B, d_C, HEIGHT_A, WIDTH_B, WIDTH_A);
       }
       cudaDeviceSynchronize();
 
