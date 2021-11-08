@@ -19,12 +19,12 @@ void randomInitNat(uint32_t* data, const uint32_t size, const uint32_t H) {
     }
 }
 
-double sortRedByKeyCUB( uint32_t* data_keys_in
-                      , uint32_t* data_keys_out
+double sortRedByKeyCUB( uint64_t* data_keys_in
+                      , uint64_t* data_keys_out
                       , const uint64_t N
 ) {
     int beg_bit = 0;
-    int end_bit = 32;
+    int end_bit = 64;
 
     void * tmp_sort_mem = NULL;
     size_t tmp_sort_len = 0;
@@ -72,37 +72,43 @@ double sortRedByKeyCUB( uint32_t* data_keys_in
 
 
 int main (int argc, char * argv[]) {
-    if (argc != 2) {
-        printf("Usage: %s <size-of-array>\n", argv[0]);
-        exit(1);
-    }
-    const uint64_t N = atoi(argv[1]);
-
+    for (int i=10; i<=20; i++)
+    {
+    int n_el = pow((double)2, (double)i);
     //Allocate and Initialize Host data with random values
-    uint32_t* h_keys  = (uint32_t*) malloc(N*sizeof(uint32_t));
-    uint32_t* h_keys_res  = (uint32_t*) malloc(N*sizeof(uint32_t));
-    randomInitNat(h_keys, N, N/10);
+    uint64_t* h_keys  = (uint64_t*) malloc(n_el*sizeof(uint64_t));
+    uint64_t* h_keys_res  = (uint64_t*) malloc(n_el*sizeof(uint64_t));
+    //randomInitNat(h_keys, N, N/10);
+
+    FILE *fptr;
+
+    fptr = fopen("../../../../IBR-Bitonic-sort/datasets/ints/random_uniform.txt", "r");
+    for (int j=0; j< n_el; j++)
+    {
+            fscanf(fptr, "%ld", &h_keys[j]);
+    };
+    fclose(fptr);
 
     //Allocate and Initialize Device data
-    uint32_t* d_keys_in;
-    uint32_t* d_keys_out;
-    cudaSucceeded(cudaMalloc((void**) &d_keys_in,  N * sizeof(uint32_t)));
-    cudaSucceeded(cudaMemcpy(d_keys_in, h_keys, N * sizeof(uint32_t), cudaMemcpyHostToDevice));
-    cudaSucceeded(cudaMalloc((void**) &d_keys_out, N * sizeof(uint32_t)));
+    uint64_t* d_keys_in;
+    uint64_t* d_keys_out;
+    cudaSucceeded(cudaMalloc((void**) &d_keys_in,  n_el * sizeof(uint64_t)));
+    cudaSucceeded(cudaMemcpy(d_keys_in, h_keys, n_el * sizeof(uint64_t), cudaMemcpyHostToDevice));
+    cudaSucceeded(cudaMalloc((void**) &d_keys_out, n_el * sizeof(uint64_t)));
 
-    double elapsed = sortRedByKeyCUB( d_keys_in, d_keys_out, N );
+    double elapsed = sortRedByKeyCUB( d_keys_in, d_keys_out, n_el );
 
-    cudaMemcpy(h_keys_res, d_keys_out, N*sizeof(uint32_t), cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_keys_res, d_keys_out, n_el*sizeof(uint64_t), cudaMemcpyDeviceToHost);
     cudaDeviceSynchronize();
     cudaCheckError();
 
-    bool success = validateZ(h_keys_res, N);
+    bool success = validateZ<uint64_t>(h_keys_res, n_el);
 
-    printf("CUB Sorting for N=%lu runs in: %.2f us, VALID: %d\n", N, elapsed, success);
+    printf("CUB Sorting for N=%lu runs in: %.2f us, VALID: %d\n", n_el, elapsed, success);
 
     // Cleanup and closing
     cudaFree(d_keys_in); cudaFree(d_keys_out);
     free(h_keys); free(h_keys_res);
-
-    return success ? 0 : 1;
+    }
+    return 0;
 }
